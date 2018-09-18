@@ -33,15 +33,6 @@ package service;
 
 // The query service definition.
 service CodeLingo {
-    // Initialise session
-    rpc Session (SessionRequest) returns (SessionReply) {}
-
-    // Reviews files
-    rpc Review (stream ReviewRequest) returns (stream Issue) {}
-
-    // Modifies source code
-    rpc Codemod (stream ReviewRequest) returns (stream Issue) {}
-
     rpc FileFromNode(Node) returns (File) {}
 
     // Lists available lexicons
@@ -131,69 +122,8 @@ message ListLexiconsReply {
     repeated string lexicons = 1;
 }
 
-message SessionRequest {}
-
-message SessionReply {
-    string key = 1;
-}
-
-// Possible values correspond with in platform/controller/graphdb/query/result
-message MetaDatum {
-    oneof datum {
-        string string = 1;
-        int64 int = 2;
-        bool bool = 3;
-    }
-}
-
-// The request message containing the files or directories to review.
-message ReviewRequest {
-    string host = 1;
-    string hostname = 2;
-    string owner = 3;
-    string repo= 4;
-    string sha = 5;
-    repeated string Patches = 6;
-    bool isPullRequest = 7;
-    int64 pullRequestID = 8;
-    string vcs = 9;
-    string dotlingo = 10;
-    string dir = 11;
-}
-
-// Issue returned from a review.
-message Issue {
-    // The name of the issue.
-    string name         =1; // Name is the the name of the checker that added the issue
-    IssueRange position =2;    // position in source file
-    string comment      =3;        // The rendered comment for this issue.
-    string ctxBefore    =4;      // source lines before the problem line(s)
-    string lineText     =5;    // the source line(s)
-    string ctxAfter     =6;   // source lines after the problem line(s)
-    map<string, string> metrics = 7; // metrics set when the issue was raised.
-    repeated string tags =8; // tags added when the issue was raised.
-    string link         =9; // (optional) the link to the style guide for the problem
-    bool newCode        =10; // When checking a diff, this indicates if the issue was found in existing or new code.
-    string patch        =11; // A diff patch resolving the issue.
-    string err          =12; // Any err encounted while building the issue.
-    bool discard        =13; // TODO(waigani) discard is only used by client and shouldn't be on wire format.
-    string discardReason=14; // TODO(waigani) also should not be on wire format.
-}
-
-message IssueRange {
-    Position start =1;
-    Position end =2;
-}
-
-message Position  {
-    string filename =1; // filename, if any
-    int64 Offset     =2;  // offset, starting at 0
-    int64 Line       =3;  // line number, starting at 1
-    int64 Column     =4;  // column number, starting at 1 (byte count)
-}
-
 message LatestClientVersionRequest {}
 
 message LatestClientVersionReply {
-    string version  =1;  // Version string, ie. 1.0.4
+    string version  = 1;  // Version string, ie. 1.0.4
 }
