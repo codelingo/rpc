@@ -37,11 +37,43 @@ option objc_class_prefix = "CLW";
 package flow;
 
 service Flow {
-    // Reviews files
+    // TODO(waigani) Review, Codemod and Search are deprecated in faviour of the generic Run function.
     rpc Review (ReviewRequest) returns (stream Issue) {}
     rpc Codemod (ReviewRequest) returns (stream Issue) {}
     rpc Search (SearchRequest) returns (stream SearchReply) {}
+
+    // Run sends a Request to run a Flow and returns a stream of the Flow's replies.
+    rpc Run (Request) returns (stream Reply) {}
 }
+
+// Request contains the information to start a Flow
+message Request {
+    // flow is the name of the Flow
+    string flow = 1;
+
+    // payload is a map of any settings required to configure the Flow.
+    map<string, Value> payload = 2;
+}
+
+// Reply is one reply of an executed Flow.
+message Reply {
+
+    // payload contains any data returned by the executed Flow.
+    map<string, Value> payload = 1;
+
+    // error is any error found during the execution of the Flow.
+    string error = 2;
+}
+
+message Value {
+    oneof value {
+        string stringProp = 1;
+        bool boolProp = 2;
+        int64 int64Prop = 3;
+        float floatProp = 4;
+    }
+}
+
 
 // The request message containing the files or directories to review.
 message ReviewRequest {
