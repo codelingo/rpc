@@ -49,8 +49,8 @@ message Request {
     // flow is the name of the Flow
     string flow = 1;
 
-    // options is a map of any settings required to configure the Flow.
-    map<string, Value> options = 2;
+    // payload contains any data required to configure the Flow.
+    google.protobuf.Any payload = 2;
 }
 
 // Reply is one reply of an executed Flow.
