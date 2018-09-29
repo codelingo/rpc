@@ -50,7 +50,7 @@ message Request {
     string flow = 1;
 
     // options is a map of any settings required to configure the Flow.
-    map<string, Value> options = 2;
+    google.protobuf.Any payload = 2;
 }
 
 // Reply is one reply of an executed Flow.
