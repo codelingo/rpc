@@ -36,11 +36,31 @@ option objc_class_prefix = "CLW";
 
 package flow;
 
+import "google/protobuf/any.proto";
+
 service Flow {
-    // Reviews files
-    rpc Review (ReviewRequest) returns (stream Issue) {}
-    rpc Codemod (ReviewRequest) returns (stream Issue) {}
-    rpc Search (SearchRequest) returns (stream SearchReply) {}
+
+    // Run sends a Request to run a Flow and returns a stream of the Flow's replies.
+    rpc Run (Request) returns (stream Reply) {}
+}
+
+// Request contains the information to start a Flow
+message Request {
+    // flow is the name of the Flow
+    string flow = 1;
+
+    // payload contains any data required to configure the Flow.
+    google.protobuf.Any payload = 2;
+}
+
+// Reply is one reply of an executed Flow.
+message Reply {
+
+    // payload contains any data returned by the executed Flow.
+    google.protobuf.Any payload = 1;
+
+    // error is any error found during the execution of the Flow.
+    string error = 2;
 }
 
 // The request message containing the files or directories to review.
@@ -58,7 +78,7 @@ message ReviewRequest {
     int64 pullRequestID = 8;
     string vcs = 9;
     string dotlingo = 10;
-    string dir = 11;
+    string dir = 11; 
 }
 
 
