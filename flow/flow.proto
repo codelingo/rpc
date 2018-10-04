@@ -63,16 +63,6 @@ message Reply {
     string error = 2;
 }
 
-message Value {
-    oneof value {
-        string stringProp = 1;
-        bool boolProp = 2;
-        int64 int64Prop = 3;
-        float floatProp = 4;    
-    }
-}
-
-
 // The request message containing the files or directories to review.
 message ReviewRequest {
     string host = 1;
