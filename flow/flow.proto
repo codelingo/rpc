@@ -102,6 +102,7 @@ message Issue {
     // isHeartbeat is used to periodically send pings from the server to keep long running connections alive.
     // clients can safely ignore this field as no other data will be sent with it.
     bool isHeartbeat = 15;
+    string DecoratorOptions = 16;
 }
 
 message IssueRange {
