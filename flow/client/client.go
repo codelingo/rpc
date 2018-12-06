@@ -65,8 +65,8 @@ func (f *FlowClient) Run(ctx context.Context, requestc <-chan *flow.Request, opt
 				return
 			}
 		}
-		err := stream.CloseSend()
-		if err != nil {
+
+		if err := stream.CloseSend(); err != nil {
 			errorc <- errors.Trace(err)
 		}
 	}()
