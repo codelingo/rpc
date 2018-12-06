@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"io"
+	"sync"
 
 	"github.com/codelingo/rpc/flow"
 	"github.com/juju/errors"
@@ -21,17 +22,19 @@ func NewFlowClient(conn *grpc.ClientConn) *FlowClient {
 	}
 }
 
-func (f *FlowClient) Run(ctx context.Context, req *flow.Request) (chan *flow.Reply, chan error, error) {
-	stream, err := f.pbClient.Run(ctx, req)
+func (f *FlowClient) Run(ctx context.Context, requestc <-chan *flow.Request, opts ...grpc.CallOption) (chan *flow.Reply, chan error, error) {
+	stream, err := f.pbClient.Run(ctx, opts...)
 	if err != nil {
 		return nil, nil, errors.Trace(err)
 	}
 
+	// Get server responses
 	errorc := make(chan error)
+	errWg := &sync.WaitGroup{}
+	errWg.Add(2)
 	replyc := make(chan *flow.Reply)
-
 	go func() {
-		defer close(errorc)
+		defer errWg.Done()
 		defer close(replyc)
 		for {
 			in, err := stream.Recv()
@@ -47,6 +50,30 @@ func (f *FlowClient) Run(ctx context.Context, req *flow.Request) (chan *flow.Rep
 				replyc <- in
 			}
 		}
+	}()
+
+	// Send requests
+	go func() {
+		defer errWg.Done()
+		for request := range requestc {
+			err := stream.Send(request)
+			if err == io.EOF {
+				return
+			}
+			if err != nil {
+				errorc <- errors.Trace(err)
+				return
+			}
+		}
+
+		if err := stream.CloseSend(); err != nil {
+			errorc <- errors.Trace(err)
+		}
+	}()
+
+	go func() {
+		errWg.Wait()
+		close(errorc)
 	}()
 
 	return replyc, errorc, nil
