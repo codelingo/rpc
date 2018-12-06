@@ -41,7 +41,7 @@ import "github.com/golang/protobuf/ptypes/any/any.proto";
 service Flow {
 
     // Run sends a Request to run a Flow and returns a stream of the Flow's replies.
-    rpc Run (Request) returns (stream Reply) {}
+    rpc Run (stream Request) returns (stream Reply) {}
 }
 
 // Request contains the information to start a Flow
@@ -139,4 +139,15 @@ message PropertyValue {
         float floatProp = 4;
     }
     repeated string decorators = 5;
+}
+
+message UserVariableSetter {
+    string name = 1;
+    string default = 2;
+    int64 id = 3;
+}
+
+message UserVariableValue {
+    string value = 1;
+    int64 id = 2;
 }
