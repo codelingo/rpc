@@ -83,6 +83,7 @@ message ReviewRequest {
     string vcs = 9;
     string dotlingo = 10;
     string dir = 11; 
+    string path = 14;
 }
 
 
