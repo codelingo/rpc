@@ -84,6 +84,7 @@ message ReviewRequest {
     string dotlingo = 10;
     string dir = 11; 
     string path = 14;
+    int64 diffID = 15;
 }
 
 
